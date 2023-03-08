@@ -3,13 +3,21 @@ use actix_web::web::Data;
 //use std::net::IpAddr;
 
 #[get("/")]
-async fn index() -> impl Responder {
-    let content = "<h1>Available Endpoints:</h1>
-                   <ul>
-                       <li><a href=\"/time\">/time</a>: Get the current time</li>
-                       <li><a href=\"/ip\">/ip</a>: Get the client's IP address</li>
-                       <li><a href=\"/add/2/3\">/add/{num1}/{num2}</a>: Add two numbers together</li>
-                   </ul>";
+async fn start_index() -> impl Responder {
+    let content = "<!DOCTYPE html>
+    <html>
+    <head>
+      <title>Page Title</title>
+    </head>
+    <body>
+    <h1>Available Endpoints:</h1>
+    <ul>
+        <li><a href=\"/time\">/time</a>: Get the current time</li>
+        <li><a href=\"/ip\">/ip</a>: Get the client's IP address</li>
+        <li><a href=\"/add/2/3\">/add/{num1}/{num2}</a>: Add two numbers together</li>
+    </ul>
+    </body>
+    </html>";
     HttpResponse::Ok().body(content)
 }
 
@@ -82,7 +90,7 @@ async fn main() -> std::io::Result<()> {
         let ip = std::net::IpAddr::V4(std::net::Ipv4Addr::new(127, 0, 0, 1));
         App::new()
             .app_data(Data::new(ip))
-            .service(index())
+            .service(start_index)
             .service(get_time)
             //.service(get_ip)
             .service(add_numbers)
