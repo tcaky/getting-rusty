@@ -8,3 +8,7 @@ edition = "2021"
 [dependencies]
 actix-web = "4.3.1"
 chrono = "0.4.23"
+
+[[bin]]
+name = "my-api-server"
+path = "src/main.rs"
