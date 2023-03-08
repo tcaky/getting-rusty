@@ -1,7 +1,8 @@
 use std::io;
 
 fn main() {
-    // Read input integer
+    // Prompt the user to enter a number
+    println!("Enter a number to convert to Roman numerals:");
     let mut input = String::new();
     io::stdin().read_line(&mut input).unwrap();
     let num: u32 = input.trim().parse().unwrap();
@@ -41,5 +42,5 @@ fn main() {
     }
 
     // Output Roman numeral string
-    println!("{}", result);
+    println!("Roman numeral: {}", result);
 }
