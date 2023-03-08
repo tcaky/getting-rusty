@@ -2,6 +2,17 @@ use actix_web::{get, App, HttpResponse, HttpServer, Responder};
 use actix_web::web::Data;
 //use std::net::IpAddr;
 
+#[get("/")]
+async fn index() -> impl Responder {
+    let content = "<h1>Available Endpoints:</h1>
+                   <ul>
+                       <li><a href=\"/time\">/time</a>: Get the current time</li>
+                       <li><a href=\"/ip\">/ip</a>: Get the client's IP address</li>
+                       <li><a href=\"/add/2/3\">/add/{num1}/{num2}</a>: Add two numbers together</li>
+                   </ul>";
+    HttpResponse::Ok().body(content)
+}
+
 #[get("/time")]
 async fn get_time() -> impl Responder {
     let now = chrono::Local::now();
@@ -71,12 +82,13 @@ async fn main() -> std::io::Result<()> {
         let ip = std::net::IpAddr::V4(std::net::Ipv4Addr::new(127, 0, 0, 1));
         App::new()
             .app_data(Data::new(ip))
+            .service(index())
             .service(get_time)
             //.service(get_ip)
             .service(add_numbers)
             .service(roman)
     })
-    .bind("127.0.0.1:8080")?
+    .bind("0.0.0.0:8080")?
     .run()
     .await
 }
