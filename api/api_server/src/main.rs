@@ -1,5 +1,8 @@
 use actix_web::{get, App, HttpResponse, HttpServer, Responder};
 use actix_web::web::Data;
+use chrono::{DateTime, Local, NaiveTime, TimeZone};
+
+//use chrono::TimeLike;
 //use std::net::IpAddr;
 
 #[get("/")]
@@ -15,6 +18,8 @@ async fn start_index() -> impl Responder {
         <li><a href=\"/time\">/time</a>: Get the current time</li>
         <li><a href=\"/ip\">/ip</a>: Get the client's IP address</li>
         <li><a href=\"/add/2/3\">/add/{num1}/{num2}</a>: Add two numbers together</li>
+        <li><a href=\"/roman/12\">/roman/{num1}</a>: Display integer as a roman numeral</li>
+        <li><a href=\"/roman_clock\">/roman_clock</a>: Display time when GET request made as roman numerals.</li>
     </ul>
     </body>
     </html>";
@@ -78,9 +83,56 @@ async fn roman(info: actix_web::web::Path<i32>) -> impl Responder {
             }
         }
     }
-
-
     HttpResponse::Ok().body(format!("{}", result))
+}
+
+#[get("/roman_clock")]
+async fn roman_clock() -> impl Responder {
+    let now: DateTime<Local> = Local::now();
+    let time: NaiveTime = now.time();
+    let hour = roman_numeral(time.hour());
+    let minute = roman_numeral(time.minute());
+    let second = roman_numeral(time.second());
+    
+    HttpResponse::Ok().body(format!("{}:{}:{}", hour, minute, second))
+}
+
+
+fn roman_numeral(num: u32) -> String {
+        // Define Roman numeral symbols and their values
+        let symbols = vec![
+            ('M', 1000),
+            ('D', 500),
+            ('C', 100),
+            ('L', 50),
+            ('X', 10),
+            ('V', 5),
+            ('I', 1),
+        ];
+    
+        // Build Roman numeral string
+        let mut result = String::new();
+        let mut remaining = num;
+        for &(symbol, value) in symbols.iter() {
+            while remaining >= value {
+                result.push(symbol);
+                remaining -= value;
+            }
+    
+            // Check for subtractive notation
+            if remaining > 0 {
+                let next_value = symbols.iter().find(|&&(_, v)| v <= remaining);
+                if let Some(&(next_symbol, next_value)) = next_value {
+                    let difference = value - next_value;
+                    if difference <= remaining {
+                        result.push(next_symbol);
+                        result.push(symbol);
+                        remaining -= difference;
+                    }
+                }
+            }
+        }
+        result
 }
 
 #[actix_web::main]
