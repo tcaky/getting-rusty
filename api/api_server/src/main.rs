@@ -1,19 +1,7 @@
 use actix_web::{get, App, HttpResponse, HttpServer, Responder};
 use actix_web::web::Data;
-//use chrono::{
-    //Utc,
-    //DateTime, 
-    //Local, 
-    //NaiveTime, 
-    //TimeZone
-//};
 use chrono::prelude::*;
-
 use chrono_tz::Canada::Eastern;
-
-
-//use chrono::TimeLike;
-//use std::net::IpAddr;
 
 #[get("/")]
 async fn start_index() -> impl Responder {
@@ -48,8 +36,6 @@ async fn get_time() -> impl Responder {
 //     HttpResponse::Ok().body(format!("{}", ip))
 // }
 
-
-
 #[get("/add/{num1}/{num2}")]
 async fn add_numbers(info: actix_web::web::Path<(i32, i32)>) -> impl Responder {
     let (num1, num2) = info.into_inner();
@@ -60,39 +46,6 @@ async fn add_numbers(info: actix_web::web::Path<(i32, i32)>) -> impl Responder {
 #[get("/roman/{num}")]
 async fn roman(info: actix_web::web::Path<u32>) -> impl Responder {
     let num = info.into_inner();
-    // Define Roman numeral symbols and their values
-    // let symbols = vec![
-    //     ('M', 1000),
-    //     ('D', 500),
-    //     ('C', 100),
-    //     ('L', 50),
-    //     ('X', 10),
-    //     ('V', 5),
-    //     ('I', 1),
-    // ];
-
-    // // Build Roman numeral string
-    // let mut result = String::new();
-    // let mut remaining = num;
-    // for &(symbol, value) in symbols.iter() {
-    //     while remaining >= value {
-    //         result.push(symbol);
-    //         remaining -= value;
-    //     }
-
-    //     // Check for subtractive notation
-    //     if remaining > 0 {
-    //         let next_value = symbols.iter().find(|&&(_, v)| v <= remaining);
-    //         if let Some(&(next_symbol, next_value)) = next_value {
-    //             let difference = value - next_value;
-    //             if difference <= remaining {
-    //                 result.push(next_symbol);
-    //                 result.push(symbol);
-    //                 remaining -= difference;
-    //             }
-    //         }
-    //     }
-    // }
     let result = int_to_roman(num);
     HttpResponse::Ok().body(format!("{}", result))
 }
@@ -103,51 +56,29 @@ async fn roman_clock() -> impl Responder {
     let ottawa_time = Eastern.from_utc_datetime(&dt.naive_utc());
     //println!("Roman Clock: {}:{}:{}", roman_numeral(ottawa_time.hour()),roman_numeral(ottawa_time.minute()),roman_numeral(ottawa_time.second()));
 
-    // let now: DateTime<Local> = Local::now();
-    // let time: NaiveTime = now.time();
-    let hour = roman_numeral(ottawa_time.hour());
-    let minute = roman_numeral(ottawa_time.minute());
-    let second = roman_numeral(ottawa_time.second());
+    let hour = int_to_roman(ottawa_time.hour());
+    let minute = int_to_roman(ottawa_time.minute());
+    let second = int_to_roman(ottawa_time.second());
     
     HttpResponse::Ok().body(format!("{}:{}:{}", hour, minute, second))
 }
 
-
-fn roman_numeral(num: u32) -> String {
-        // Define Roman numeral symbols and their values
-        let symbols = vec![
-            ('M', 1000),
-            ('D', 500),
-            ('C', 100),
-            ('L', 50),
-            ('X', 10),
-            ('V', 5),
-            ('I', 1),
-        ];
-    
-        // Build Roman numeral string
-        let mut result = String::new();
-        let mut remaining = num;
-        for &(symbol, value) in symbols.iter() {
-            while remaining >= value {
-                result.push(symbol);
-                remaining -= value;
-            }
-    
-            // Check for subtractive notation
-            if remaining > 0 {
-                let next_value = symbols.iter().find(|&&(_, v)| v <= remaining);
-                if let Some(&(next_symbol, next_value)) = next_value {
-                    let difference = value - next_value;
-                    if difference <= remaining {
-                        result.push(next_symbol);
-                        result.push(symbol);
-                        remaining -= difference;
-                    }
-                }
-            }
-        }
-        result
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    // Bind the server to localhost:8080
+    HttpServer::new(|| {
+        let ip = std::net::IpAddr::V4(std::net::Ipv4Addr::new(127, 0, 0, 1));
+        App::new()
+            .app_data(Data::new(ip))
+            .service(start_index)
+            .service(get_time)
+            //.service(get_ip)
+            .service(add_numbers)
+            .service(roman)
+    })
+    .bind("0.0.0.0:8080")?
+    .run()
+    .await
 }
 
 fn int_to_roman(number: u32) -> String {
@@ -180,22 +111,3 @@ fn int_to_roman(number: u32) -> String {
     result
 }
 
-
-
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    // Bind the server to localhost:8080
-    HttpServer::new(|| {
-        let ip = std::net::IpAddr::V4(std::net::Ipv4Addr::new(127, 0, 0, 1));
-        App::new()
-            .app_data(Data::new(ip))
-            .service(start_index)
-            .service(get_time)
-            //.service(get_ip)
-            .service(add_numbers)
-            .service(roman)
-    })
-    .bind("0.0.0.0:8080")?
-    .run()
-    .await
-}
