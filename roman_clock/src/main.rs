@@ -2,6 +2,9 @@
 //use chrono::{DateTime, Local, NaiveTime, TimeZone};
 use chrono::prelude::*;
 
+use chrono_tz::Canada::Eastern;
+
+
 fn roman_numeral(num: u32) -> String {
     // Define Roman numeral symbols and their values
     let symbols = vec![
@@ -42,36 +45,8 @@ fn roman_numeral(num: u32) -> String {
 
 
 fn main() {
-    
-    // let now = Local::now();
-    // println!("Time: {}", now);
-    // let hour = now.hour();
-
-    //let dt = Utc::now().with_timezone(&FixedOffset::east_opt(-5*3600));
-
     let dt = Utc::now();
-    let timestamp: i64 = dt.timestamp();
-    
-    let time_without_zone = NaiveDateTime::from_timestamp(timestamp, 0);
-    println!("time_without_zone: {}", time_without_zone);
-    // 2009-02-13 23:31:30
-    let zoned: DateTime<FixedOffset> = DateTime::from_utc(time_without_zone, FixedOffset::east(-5 * 3600));
-    println!("zoned: {}", zoned);
-    // 2009-02-14 07:31:30 +08:00
-    //let dt = Local::now();
-    // println!("Current Hour  : {}", dt.hour());
-    // println!("Current Minute: {}", dt.minute());
-    // println!("Current Second: {}", dt.second());
-
-    // Prompt the user to enter a number
-    //println!("Enter a number to convert to Roman numerals:");
-    //let mut input = String::new();
-    //io::stdin().read_line(&mut input).unwrap();
-    //let num: u32 = input.trim().parse().unwrap();
-    // let num: u32 = 14;
-    // let result = roman_numeral(num);
-    roman_numeral(8);
-    //println!("Roman numeral: {}", result);
-    //println!("Roman Clock: {}:{}:{}", roman_numeral(dt.hour()),roman_numeral(dt.minute()),roman_numeral(dt.second()));
+    let ottawa_time = Eastern.from_utc_datetime(&dt.naive_utc());
+    println!("Roman Clock: {}:{}:{}", roman_numeral(ottawa_time.hour()),roman_numeral(ottawa_time.minute()),roman_numeral(ottawa_time.second()));
 
 }
