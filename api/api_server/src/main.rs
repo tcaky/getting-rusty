@@ -93,7 +93,7 @@ async fn roman(info: actix_web::web::Path<u32>) -> impl Responder {
     //         }
     //     }
     // }
-    let result = roman_numeral(num);
+    let result = int_to_roman(num);
     HttpResponse::Ok().body(format!("{}", result))
 }
 
@@ -149,6 +149,38 @@ fn roman_numeral(num: u32) -> String {
         }
         result
 }
+
+fn int_to_roman(number: u32) -> String {
+    let mut result = String::new();
+
+    let values = [
+        (1000, "M"),
+        (900, "CM"),
+        (500, "D"),
+        (400, "CD"),
+        (100, "C"),
+        (90, "XC"),
+        (50, "L"),
+        (40, "XL"),
+        (10, "X"),
+        (9, "IX"),
+        (5, "V"),
+        (4, "IV"),
+        (1, "I"),
+    ];
+
+    let mut remaining = number;
+    for (value, numeral) in values.iter() {
+        while remaining >= *value {
+            result.push_str(numeral);
+            remaining -= value;
+        }
+    }
+
+    result
+}
+
+
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
