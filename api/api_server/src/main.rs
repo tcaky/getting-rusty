@@ -1,6 +1,16 @@
 use actix_web::{get, App, HttpResponse, HttpServer, Responder};
 use actix_web::web::Data;
-use chrono::{DateTime, Local, NaiveTime, TimeZone};
+//use chrono::{
+    //Utc,
+    //DateTime, 
+    //Local, 
+    //NaiveTime, 
+    //TimeZone
+//};
+use chrono::prelude::*;
+
+use chrono_tz::Canada::Eastern;
+
 
 //use chrono::TimeLike;
 //use std::net::IpAddr;
@@ -88,11 +98,15 @@ async fn roman(info: actix_web::web::Path<i32>) -> impl Responder {
 
 #[get("/roman_clock")]
 async fn roman_clock() -> impl Responder {
-    let now: DateTime<Local> = Local::now();
-    let time: NaiveTime = now.time();
-    let hour = roman_numeral(time.hour());
-    let minute = roman_numeral(time.minute());
-    let second = roman_numeral(time.second());
+    let dt = Utc::now();
+    let ottawa_time = Eastern.from_utc_datetime(&dt.naive_utc());
+    println!("Roman Clock: {}:{}:{}", roman_numeral(ottawa_time.hour()),roman_numeral(ottawa_time.minute()),roman_numeral(ottawa_time.second()));
+
+    // let now: DateTime<Local> = Local::now();
+    // let time: NaiveTime = now.time();
+    let hour = roman_numeral(ottawa_time.hour());
+    let minute = roman_numeral(ottawa_time.minute());
+    let second = roman_numeral(ottawa_time.second());
     
     HttpResponse::Ok().body(format!("{}:{}:{}", hour, minute, second))
 }
