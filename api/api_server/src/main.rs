@@ -58,7 +58,7 @@ async fn add_numbers(info: actix_web::web::Path<(i32, i32)>) -> impl Responder {
 }
 
 #[get("/roman/{num}")]
-async fn roman(info: actix_web::web::Path<i32>) -> impl Responder {
+async fn roman(info: actix_web::web::Path<u32>) -> impl Responder {
     let num = info.into_inner();
     // Define Roman numeral symbols and their values
     // let symbols = vec![
