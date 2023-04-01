@@ -10,6 +10,7 @@ actix-web = "4.3.1"
 chrono = "0.4.23"
 chrono-tz = "0.8.1"
 rusty_ulid = "2.0.0"
+serde = { version = "1.0.159", features = ["derive"] }
 
 [[bin]]
 name = "my-api-server"

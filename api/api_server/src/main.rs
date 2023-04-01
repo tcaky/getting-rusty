@@ -3,6 +3,7 @@ use actix_web::web::Data;
 use chrono::prelude::*;
 use chrono_tz::Canada::Eastern;
 use rusty_ulid::Ulid;
+//use serde::{Serialize};
 
 #[derive(serde::Serialize)]
 struct UlidResponse {
@@ -75,7 +76,7 @@ async fn roman_clock() -> impl Responder {
 #[get("/ulid")]
 async fn generate_ulid() -> impl Responder {
     // Generate a new ULID
-    let ulid = Ulid::new().to_string();
+    let ulid = Ulid::generate().to_string();
 
     // Convert ULID to lowercase
     let ulid_lower = ulid.to_lowercase();
