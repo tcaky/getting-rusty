@@ -9,6 +9,7 @@ edition = "2021"
 actix-web = "4.3.1"
 chrono = "0.4.23"
 chrono-tz = "0.8.1"
+rusty_ulid = "2.0.0"
 
 [[bin]]
 name = "my-api-server"

@@ -1,7 +1,26 @@
+# https://cloud.google.com/build/docs/build-config-file-schema#build_steps
+# A build step specifies an action that you want Cloud Build to perform. 
+# For each build step, Cloud Build executes a docker container as an 
+# instance of docker run. Build steps are analogous to commands in a 
+# script and provide you with the flexibility of executing arbitrary 
+# instructions in your build. If you can package a build tool into a 
+# container, Cloud Build can execute it as part of your build. By 
+# default, Cloud Build executes all steps of a build serially on the 
+# same machine.
+
+# 1. clone my repo into this space
+
 steps:
+# Clone my git repo
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['clone', 'https://github.com/GoogleCloudPlatform/cloud-builders.git']
+# pull image
+- name: 'docker'
+  args: ['pull', 'rust:bullseye']
+
 # Build the container image
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/PROJECT_ID/IMAGE', '.']
+  args: ['build', '-t', 'tcaky/getting-rusty', '.']
 # Push the container image to Container Registry
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'northamerica-northeast1-docker.pkg.dev/pdcp-cloud-080-keithy/getting-rusty/rusty:$COMMIT_SHA']
@@ -9,5 +28,9 @@ steps:
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
   args: ['run', 'deploy', 'SERVICE-NAME', '--image', 'gcr.io/PROJECT_ID/IMAGE', '--region', 'REGION']
+substitutions:
+  _KY_VAR_1: 'bob'
+options:
+  substition_option: 'ALLOW_LOOSE'
 images:
 - gcr.io/PROJECT_ID/IMAGE

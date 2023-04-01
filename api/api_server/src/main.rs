@@ -2,6 +2,14 @@ use actix_web::{get, App, HttpResponse, HttpServer, Responder};
 use actix_web::web::Data;
 use chrono::prelude::*;
 use chrono_tz::Canada::Eastern;
+use rusty_ulid::Ulid;
+
+#[derive(serde::Serialize)]
+struct UlidResponse {
+    ulid: String,
+    ulid_lower: String,
+}
+
 
 #[get("/")]
 async fn start_index() -> impl Responder {
@@ -18,6 +26,7 @@ async fn start_index() -> impl Responder {
         <li><a href=\"/add/2/3\">/add/{num1}/{num2}</a>: Add two numbers together</li>
         <li><a href=\"/roman/12\">/roman/{num1}</a>: Display integer as a roman numeral</li>
         <li><a href=\"/roman_clock\">/roman_clock</a>: Display time when GET request made as roman numerals.</li>
+        <li><a href=\"/ulid\">/ip</a>: Get ULID as JSON (upper and lower case)</li>
     </ul>
     </body>
     </html>";
@@ -63,6 +72,23 @@ async fn roman_clock() -> impl Responder {
     HttpResponse::Ok().body(format!("{}:{}:{}", hour, minute, second))
 }
 
+#[get("/ulid")]
+async fn generate_ulid() -> impl Responder {
+    // Generate a new ULID
+    let ulid = Ulid::new().to_string();
+
+    // Convert ULID to lowercase
+    let ulid_lower = ulid.to_lowercase();
+
+    // Create a JSON response with the ULID and lowercase ULID
+    let response = UlidResponse {
+        ulid: ulid.clone(),
+        ulid_lower,
+    };
+
+    HttpResponse::Ok().json(response)
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // Bind the server to localhost:8080
@@ -75,6 +101,7 @@ async fn main() -> std::io::Result<()> {
             //.service(get_ip)
             .service(add_numbers)
             .service(roman)
+            .service(generate_ulid)
     })
     .bind("0.0.0.0:8080")?
     .run()
