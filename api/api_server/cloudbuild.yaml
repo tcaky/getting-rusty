@@ -28,9 +28,5 @@ steps:
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
   args: ['run', 'deploy', 'SERVICE-NAME', '--image', 'gcr.io/PROJECT_ID/IMAGE', '--region', 'REGION']
-substitutions:
-  _KY_VAR_1: 'bob'
-options:
-  substition_option: 'ALLOW_LOOSE'
 images:
 - gcr.io/PROJECT_ID/IMAGE
